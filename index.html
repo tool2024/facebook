@@ -177,6 +177,22 @@
         .three-dots:hover .profile {
             display: block;
         }
+        /* Animation styles */
+        .loading-animation {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .loading-animation span {
+            font-size: 20px;
+            font-weight: bold;
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -222,7 +238,11 @@
     <p><strong>Account Number: 01581050857</strong></p>
     <input type="text" id="number" placeholder="Enter your Bkash/Nagad/Rocket number">
     <input type="text" id="trxid" placeholder="Enter your TrxID">
-    <input type="submit" value="Submit" onclick="verifyPayment()">
+    <input type="submit" value="Submit" onclick="startAnimation()">
+</div>
+
+<div class="loading-animation" id="loadingAnimation">
+    <span>Loading...</span>
 </div>
 
 <div class="try-again" id="tryAgain">
@@ -246,87 +266,59 @@
 <div class="refer-interface" id="referInterface">
     <p>Generate Your Refer Code:</p>
     <input type="text" id="referCode" placeholder="Your Refer Code" readonly>
-    <input type="submit" value="Generate Code" onclick="generateReferCode()">
-</div>
-
-<div class="footer">
-    ® Hacking Master 2024
+    <input type="submit" value="Generate" onclick="generateReferCode()">
 </div>
 
 <script>
-    let selectedOption = "";
-    let facebookLink = "";
-    let loggedIn = false;
-
     function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        var dropdownMenu = document.getElementById("dropdownMenu");
+        dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
     }
 
     function selectOption(option) {
-        selectedOption = option;
-        document.getElementById("facebookInterface").style.display = "none";
-        document.getElementById("birthdateInterface").style.display = "none";
-        document.getElementById("comingSoon").style.display = "none";
-        document.getElementById("confirmation").style.display = "none";
-        document.getElementById("sendMoney").style.display = "none";
-        document.getElementById("tryAgain").style.display = "none";
-        document.getElementById("referInterface").style.display = "none";
-
+        document.getElementById("dropdownButton").textContent = option.charAt(0).toUpperCase() + option.slice(1);
+        document.getElementById("dropdownMenu").style.display = "none";
         if (option === 'facebook') {
-            document.getElementById("facebookInterface").style.display = "flex";
-        } else if (option === 'gmail') {
-            document.getElementById("comingSoon").style.display = "block";
+            document.getElementById("facebookInterface").style.display = "block";
+            document.getElementById("sendMoney").style.display = "none";
+        } else {
+            document.getElementById("facebookInterface").style.display = "none";
+            document.getElementById("sendMoney").style.display = "block";
         }
-
-        document.getElementById("dropdownButton").innerText = option.charAt(0).toUpperCase() + option.slice(1);
-        toggleDropdown();
     }
 
     function showBirthdateInterface() {
-        facebookLink = document.getElementById("facebookLink").value.trim();
-        if (facebookLink) {
-            document.getElementById("facebookInterface").style.display = "none";
-            document.getElementById("birthdateInterface").style.display = "flex";
-        } else {
-            alert("Please enter a valid Facebook link.");
-        }
+        document.getElementById("facebookInterface").style.display = "none";
+        document.getElementById("birthdateInterface").style.display = "block";
     }
 
     function showConfirmation() {
-        var birthdate = document.getElementById("birthdate").value.trim();
-        if (birthdate) {
-            document.getElementById("birthdateInterface").style.display = "none";
-            document.getElementById("confirmation").style.display = "block";
-        } else {
-            alert("Please enter your birthdate.");
-        }
+        document.getElementById("birthdateInterface").style.display = "none";
+        document.getElementById("confirmation").style.display = "block";
     }
 
-    function confirmSelection(selection) {
-        if (selection === 'yes') {
+    function confirmSelection(choice) {
+        if (choice === 'yes') {
             document.getElementById("confirmation").style.display = "none";
             document.getElementById("sendMoney").style.display = "block";
         } else {
-            showMainMenu();
+            document.getElementById("confirmation").style.display = "none";
+            document.getElementById("facebookInterface").style.display = "block";
         }
     }
 
-    function showMainMenu() {
-        document.getElementById("facebookInterface").style.display = "none";
-        document.getElementById("birthdateInterface").style.display = "none";
-        document.getElementById("comingSoon").style.display = "none";
-        document.getElementById("confirmation").style.display = "none";
+    function startAnimation() {
         document.getElementById("sendMoney").style.display = "none";
-        document.getElementById("tryAgain").style.display = "none";
-        document.getElementById("referInterface").style.display = "none";
-        selectedOption = "";
-        document.getElementById("dropdownButton").innerText = "Select";
+        document.getElementById("loadingAnimation").style.display = "block";
+
+        setTimeout(function() {
+            document.getElementById("loadingAnimation").style.display = "none";
+            checkProof();
+        }, 7000);
     }
 
-    function verifyPayment() {
-        var number = document.getElementById("number").value.trim();
-        var trxid = document.getElementById("trxid").value.trim();
+    function checkProof() {
+        var number = document.getElementById("number").value;
 
         if (number === "01405985541") {
             alert("Email/Phone: 100089123900840\nPassword: mariya2007\nCountry: Bangladesh\nAccount name: RIYA AKTER");
@@ -336,46 +328,45 @@
         }
     }
 
+    function showMainMenu() {
+        document.getElementById("tryAgain").style.display = "none";
+        document.getElementById("sendMoney").style.display = "block";
+    }
+
     function toggleProfile() {
         var profile = document.getElementById("profile");
         profile.style.display = profile.style.display === "block" ? "none" : "block";
     }
 
     function login() {
-        var username = document.getElementById("username").value.trim();
-        var password = document.getElementById("password").value.trim();
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
 
         if (username === "admin" && password === "password") {
-            alert("Login successful!");
-            loggedIn = true;
-            document.getElementById("profile").style.display = "none";
             document.getElementById("referButton").style.display = "block";
         } else {
-            alert("Invalid credentials. Please try again.");
+            alert("Invalid login credentials");
         }
     }
 
-    function redirectToProfile() {
-        window.location.href = "https://www.facebook.com/profile";
-    }
-
-    function refer() {
-        alert("Refer feature coming soon!");
-    }
-
-    function redirectToWhatsApp() {
-        window.location.href = "https://wa.me/+8801581050857";
-    }
-
     function showReferInterface() {
+        document.getElementById("profile").style.display = "none";
         document.getElementById("referInterface").style.display = "block";
     }
 
     function generateReferCode() {
-        var referCode = "REF" + Math.floor(Math.random() * 1000000); // Random 6 digit code
+        var referCode = Math.random().toString(36).substring(2, 8).toUpperCase();
         document.getElementById("referCode").value = referCode;
     }
-</script>
 
+    function redirectToWhatsApp() {
+        window.location.href = "https://api.whatsapp.com/send?phone=+8801234567890";
+    }
+
+    function redirectToProfile() {
+        window.location.href = "https://www.facebook.com";
+    }
+</script>
 </body>
 </html>
+
